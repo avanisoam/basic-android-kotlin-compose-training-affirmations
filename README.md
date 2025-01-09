@@ -1,8 +1,8 @@
 Affirmations App - Solution Code
 ================================
 Read on [Medium](https://medium.com/@avanisoam/draft-implementing-pagination-in-jetpack-compose-with-and-without-paging-3-library-0074df3d7c50)
-Solution code for the Android Basics with Compose: Affirmations app.
 
+Solution code for the Android Basics with Compose: Affirmations app.
 
 Introduction
 ------------
