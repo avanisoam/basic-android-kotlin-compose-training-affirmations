@@ -74,4 +74,11 @@ dependencies {
 
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Paging
+    implementation ("androidx.paging:paging-compose:1.0.0-alpha12")
+    implementation ("androidx.paging:paging-runtime:3.0.1")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 }

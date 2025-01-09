@@ -25,7 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+//import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,11 +38,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.affirmations.data.Datasource
+//import com.example.affirmations.data.Datasource
 import com.example.affirmations.model.Affirmation
 import com.example.affirmations.ui.theme.AffirmationsTheme
+import androidx.paging.compose.items
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 
 class MainActivity : ComponentActivity() {
+    private val myViewModel by viewModels<MyViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +62,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AffirmationsApp()
+                    val lazyPagingItems = myViewModel.pagingDataFlow.collectAsLazyPagingItems()
+
+                    //AffirmationsApp()
+                    AffirmationsApp(affirmationList = lazyPagingItems)
                 }
             }
         }
@@ -61,20 +73,49 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AffirmationsApp() {
+// fun AffirmationsApp() {
+fun AffirmationsApp(affirmationList: LazyPagingItems<Affirmation>) {
     AffirmationList(
-        affirmationList = Datasource().loadAffirmations(),
+        affirmationList = affirmationList //Datasource().loadAffirmations(),
     )
 }
 
 @Composable
-fun AffirmationList(affirmationList: List<Affirmation>, modifier: Modifier = Modifier) {
+//fun AffirmationList(affirmationList: List<Affirmation>, modifier: Modifier = Modifier) {
+fun AffirmationList(affirmationList: LazyPagingItems<Affirmation>, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier) {
+        /*
         items(affirmationList) { affirmation ->
             AffirmationCard(
                 affirmation = affirmation,
                 modifier = Modifier.padding(8.dp)
             )
+        }
+         */
+        items(affirmationList) {affirmation ->
+            if (affirmation != null) {
+                AffirmationCard(
+                    affirmation = affirmation,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
+        affirmationList.apply {
+            when {
+                loadState.refresh is LoadState.Loading -> {
+                    // You can add shimmer here
+                }
+                loadState.append is LoadState.Loading -> {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
+                }
+                loadState.append is LoadState.Error -> {
+                    // Handle error
+                }
+            }
         }
     }
 }
@@ -103,5 +144,5 @@ fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun AffirmationCardPreview() {
-    AffirmationCard(Affirmation(R.string.affirmation1, R.drawable.image1))
+    AffirmationCard(Affirmation(1,R.string.affirmation1, R.drawable.image1))
 }
